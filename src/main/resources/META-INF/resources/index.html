@@ -253,11 +253,13 @@ textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border
 <script>
 // ---- Einstellungen ----
 const MAIL_TO = 'daniel.baur.sg@gmail.com';
-const PROTO_URL = 'https://claude.ai/artifact/RbBP26irHq3qg9Rqz6Q6eC';
+const PROTO_URL_CLAUDE = 'https://claude.ai/artifact/RbBP26irHq3qg9Rqz6Q6eC';
 // Basis-URL des survey-service. '' = gleiche Domain wie diese Seite (Standard, wenn der Service die Seite ausliefert).
 const API_URL = '';
 // Auf claude.ai oder als lokale Datei gibt es kein Backend: dann nur Mail und Kopieren.
 const API_ON = location.protocol.startsWith('http') && !/claude\.ai$|claudeusercontent\.com$/.test(location.hostname);
+// Läuft die Seite auf dem survey-service, liegt der Prototyp gleich daneben.
+const PROTO_URL = API_ON ? '/prototyp/' : PROTO_URL_CLAUDE;
 
 // ---- Inhalte ----
 const Q_HEUTE = [
