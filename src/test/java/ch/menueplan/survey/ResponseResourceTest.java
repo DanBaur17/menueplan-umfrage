@@ -50,6 +50,16 @@ class ResponseResourceTest {
     }
 
     @Test
+    void akzeptiertPostMitOriginHeaderDerEigenenSeite() {
+        // Browser schicken bei POST immer einen Origin-Header mit. Das darf nicht zu 403 führen.
+        given().contentType(ContentType.JSON).header("X-Forwarded-For", "10.0.0.4")
+                .header("Origin", "https://umfrage-production.up.railway.app")
+                .body("{\"answers\":{\"wer\":\"Ich\"},\"ratings\":{},\"summary\":\"x\"}")
+                .when().post("/api/responses")
+                .then().statusCode(201);
+    }
+
+    @Test
     void adminEndpunkteBrauchenToken() {
         given().when().get("/api/responses").then().statusCode(403);
         given().header("X-Admin-Token", "falsch").when().get("/api/stats").then().statusCode(403);
