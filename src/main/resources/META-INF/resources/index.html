@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menüplan Umfrage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Lora:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<style>
+/* Layout: eine Spalte, mobile-first, Abschnitte als Bänder. Tokens aus dem MenüplanApp Design System (bewusst nur hell). */
+:root {
+  --green: #5CB84B; --green-d: #3E8A32; --link: #2F7A2A; --anth: #1E2C31; --mint: #9ED98C;
+  --bg: #F4F8F0; --bg2: #E4EFDD; --line: #DCEBD5; --text: #1E2C31; --text2: #4B5D57; --muted: #8FA79E;
+  --badge: #2F5A2A; --on-dark2: #B9CBC5; --surface: #FBFDF9; --warn-bg: #F7EFCF; --warn: #6B5410; --ok-bg: #DCF0D3;
+  --f-d: 'Lora', Georgia, serif; --f-b: 'Libre Franklin', system-ui, -apple-system, sans-serif;
+  --shadow: 0 8px 24px rgba(30,44,49,0.14);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+*[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--text); }
+body { font-family: var(--f-b); font-size: 16px; line-height: 1.5; margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+.wrap { max-width: 720px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band { padding-block: 40px; }
+.band.dark { background: var(--anth); color: #F4F8F0; }
+.band.deep { background: var(--bg2); }
+h1, h2, h3 { font-family: var(--f-d); font-weight: 600; line-height: 1.15; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(34px, 7vw, 52px); }
+h2 { font-size: clamp(26px, 5vw, 34px); }
+h3 { font-size: 20px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--link); }
+.dark .eyebrow { color: var(--mint); }
+.lead { font-size: 18px; color: var(--text2); margin: 0; max-width: 60ch; }
+.dark .lead { color: var(--on-dark2); }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.muted { color: var(--text2); }
+.small { font-size: 14px; }
+
+/* Fortschritt */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.progress { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: rgba(251,253,249,.95); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.progress .wrap { display: flex; align-items: center; gap: 12px; padding-block: 10px; }
+.pbar { flex: 1; height: 8px; background: var(--bg2); border-radius: 999px; overflow: hidden; }
+.pbar > div { height: 100%; width: 0; background: var(--green); border-radius: 999px; transition: width .3s; }
+.pnum { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.brand { font-family: var(--f-d); font-weight: 600; font-size: 17px; white-space: nowrap; }
+
+/* Hero */
+.hero { padding-block: 48px 56px; }
+.hero-grid { display: grid; grid-template-columns: 1fr; gap: 28px; align-items: center; }
+@media (min-width: 640px) { .hero-grid { grid-template-columns: 1.3fr 1fr; } }
+.hero h1 em { font-style: italic; color: var(--mint); }
+.week { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 24px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.week-row { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: center; font-size: 14px; }
+.week-row b { color: var(--mint); font-size: 13px; }
+.week-row span { background: rgba(255,255,255,.08); border-radius: 10px; padding: 7px 10px; min-width: 0; }
+.week-row span.ev { background: var(--warn-bg); color: var(--warn); font-weight: 600; }
+.cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { border: 0; border-radius: 999px; padding: 14px 26px; font-size: 16px; font-weight: 700; min-height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+.btn-primary { background: var(--green); color: var(--anth); }
+.btn-primary:hover { background: #6CC75B; }
+.btn-ghost { background: var(--bg2); color: var(--anth); }
+.btn-on-dark { background: rgba(255,255,255,.1); color: #F4F8F0; border: 1px solid rgba(255,255,255,.22); }
+.facts { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--on-dark2); }
+.facts strong { color: #F4F8F0; }
+
+/* Features */
+.areas { display: flex; flex-direction: column; gap: 28px; }
+.area-h { display: flex; align-items: baseline; gap: 10px; }
+.area-h .n { font-family: var(--f-d); color: var(--green-d); font-size: 15px; }
+.fgrid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 640px) { .fgrid { grid-template-columns: 1fr 1fr; } }
+.fcard { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.fcard.rated-2 { border-color: var(--green); box-shadow: 0 0 0 1px var(--green) inset; }
+.ftop { display: flex; gap: 8px; align-items: flex-start; justify-content: space-between; }
+.ftitle { font-weight: 700; line-height: 1.3; }
+.fdesc { font-size: 14px; color: var(--text2); }
+.tier { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; background: var(--bg2); color: var(--badge); }
+.tier.Midi { background: var(--mint); color: var(--anth); }
+.tier.Pro { background: var(--anth); color: var(--mint); }
+.rate { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.rate button { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 4px; font-size: 13px; font-weight: 600; min-height: 40px; color: var(--text2); }
+.rate button[aria-pressed="true"] { background: var(--anth); color: #F4F8F0; border-color: var(--anth); }
+.rate button[data-v="2"][aria-pressed="true"] { background: var(--green); color: var(--anth); border-color: var(--green); }
+
+/* Preise */
+.tiers { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 640px) { .tiers { grid-template-columns: repeat(3, 1fr); } }
+.tcard { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.tcard.dark { background: var(--anth); color: #F4F8F0; border-color: var(--anth); }
+.tcard .price { font-family: var(--f-d); font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tcard .price small { font-family: var(--f-b); font-size: 14px; font-weight: 400; color: var(--text2); }
+.tcard.dark .price small { color: var(--on-dark2); }
+.ticks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.ticks li::before { content: "✓ "; color: var(--green); font-weight: 700; }
+.trial { background: var(--warn-bg); color: var(--warn); font-weight: 700; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
+
+/* Fragen */
+.qsec { display: flex; flex-direction: column; gap: 22px; }
+.q { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.q.done { border-color: var(--mint); }
+.q-h { display: flex; gap: 10px; align-items: flex-start; }
+.q-n { flex: 0 0 28px; height: 28px; border-radius: 999px; background: var(--anth); color: var(--mint); display: grid; place-items: center; font-size: 13px; font-weight: 700; }
+.q.done .q-n { background: var(--green); color: var(--anth); }
+.q-t { font-weight: 700; font-size: 17px; line-height: 1.35; }
+.q-hint { font-size: 13px; color: var(--muted); }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { border: 1.5px solid var(--line); background: var(--bg); border-radius: 999px; padding: 10px 16px; font-size: 15px; font-weight: 600; min-height: 44px; color: var(--text); }
+.opt:hover { border-color: var(--mint); }
+.opt[aria-pressed="true"] { background: var(--anth); color: #F4F8F0; border-color: var(--anth); }
+.opts.yn .opt { min-width: 96px; }
+.opts.price .opt { font-variant-numeric: tabular-nums; min-width: 72px; }
+textarea, input[type=text] { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px 14px; font: inherit; font-size: 16px; color: var(--text); }
+textarea { min-height: 90px; resize: vertical; }
+textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border-color: transparent; }
+.sub { padding-left: 14px; border-left: 3px solid var(--mint); display: flex; flex-direction: column; gap: 10px; }
+.sub[hidden] { display: none !important; }
+
+/* Testing */
+.proto { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 24px; padding: 20px; }
+@media (min-width: 640px) { .proto { grid-template-columns: 1fr auto; } }
+.dark .q { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14); }
+.dark .q.done { border-color: var(--green); }
+.dark .opt { background: transparent; color: #F4F8F0; border-color: rgba(255,255,255,.25); }
+.dark .opt[aria-pressed="true"] { background: var(--green); color: var(--anth); border-color: var(--green); }
+.dark .q-hint { color: var(--on-dark2); }
+.dark input[type=text], .dark textarea { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.2); color: #F4F8F0; }
+.dark input::placeholder, .dark textarea::placeholder { color: var(--on-dark2); }
+
+/* Zusammenfassung */
+.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: var(--shadow); }
+.sum-text { white-space: pre-wrap; font-size: 14px; background: var(--bg); border-radius: 12px; padding: 14px; max-height: 340px; overflow: auto; font-variant-numeric: tabular-nums; }
+.mailto { font-size: 14px; color: var(--text2); }
+.mailto code { background: var(--bg2); padding: 2px 8px; border-radius: 6px; user-select: all; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.status.err { color: #9A3A2A; }
+.status { font-weight: 700; color: var(--badge); min-height: 1.5em; }
+.foot { text-align: center; font-size: 12px; color: var(--muted); padding-block: 28px 40px; }
+.bubble circle { animation: blink 1.4s infinite; }
+.bubble circle:nth-child(3) { animation-delay: .2s; } .bubble circle:nth-child(4) { animation-delay: .4s; }
+@keyframes blink { 50% { opacity: .35; } }
+</style>
+</head>
+<body>
+
+
+<div class="progress" aria-label="Fortschritt">
+  <div class="wrap">
+    <span class="brand">Menüplan</span>
+    <div class="pbar" aria-hidden="true"><div id="pfill"></div></div>
+    <span class="pnum" id="pnum">0 von 0</span>
+  </div>
+</div>
+
+<header class="band dark hero">
+  <div class="wrap hero-grid">
+    <div class="stack">
+      <div class="eyebrow">Kurze Umfrage · 8 Minuten</div>
+      <h1>Was essen wir <em>diese Woche?</em></h1>
+      <p class="lead">Ich baue eine App, die für Familien Mittag- und Abendessen für die ganze Woche plant, passend zu euren Terminen. Bevor ich weiterbaue, will ich wissen: Brauchst du das wirklich? Ehrliche Antworten helfen mir mehr als Lob.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#features">Los geht's</a>
+        <a class="btn btn-on-dark" id="protoLinkHero" href="#" target="_blank" rel="noopener">Prototyp ansehen</a>
+      </div>
+      <div class="facts"><span><strong>14</strong> Mahlzeiten pro Woche</span><span><strong>1 Min</strong> bis zum Vorschlag</span><span><strong>Bring!</strong> &amp; <strong>Thermomix</strong></span></div>
+    </div>
+    <div class="week" aria-label="Beispielwoche">
+      <svg class="bubble" width="64" height="43" viewBox="0 0 90 60" aria-hidden="true"><path d="M8 8 h74 a6 6 0 0 1 6 6 v28 a6 6 0 0 1 -6 6 h-40 l-14 12 v-12 h-20 a6 6 0 0 1 -6 -6 v-28 a6 6 0 0 1 6 -6 z" fill="rgba(255,255,255,.12)"/><circle cx="30" cy="28" r="4" fill="#5CB84B"/><circle cx="45" cy="28" r="4" fill="#5CB84B"/><circle cx="60" cy="28" r="4" fill="#9ED98C"/></svg>
+      <div class="small" style="color:var(--on-dark2)">«Mittwoch kommen die Grosseltern, Donnerstag muss es schnell gehen.»</div>
+      <div class="week-row"><b>Mo</b><span class="ev">🕡 Schwimmen bis 20:00</span></div>
+      <div class="week-row"><b>Mo</b><span>Falafel-Bowl · 30 Min</span></div>
+      <div class="week-row"><b>Mi</b><span>Spinat-Lasagne für 6</span></div>
+      <div class="week-row"><b>Do</b><span>Pasta Pomodoro · 15 Min</span></div>
+      <div class="week-row"><b>Fr</b><span class="ev">🍕 auswärts bei Müllers</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="band" id="heute">
+    <div class="wrap stack">
+      <div class="eyebrow">Teil 1 von 4</div>
+      <h2>Wie läuft es heute bei euch?</h2>
+      <p class="lead">Es geht um eure letzte Woche, nicht um Wünsche.</p>
+      <div class="qsec" id="q-heute"></div>
+    </div>
+  </section>
+
+  <section class="band deep" id="features">
+    <div class="wrap stack">
+      <div class="eyebrow">Teil 2 von 4</div>
+      <h2>Was die App kann</h2>
+      <p class="lead">Tippe bei jeder Funktion, wie wichtig sie dir wäre.</p>
+      <div class="areas" id="areas"></div>
+    </div>
+  </section>
+
+  <section class="band" id="preis">
+    <div class="wrap stack">
+      <div class="eyebrow">Teil 3 von 4</div>
+      <h2>Was wäre es dir wert?</h2>
+      <p class="lead">So sind die Abos geplant. Deine Antworten unten zählen mehr als meine Preise.</p>
+      <div class="tiers">
+        <div class="tcard"><h3>Free</h3><div class="price">CHF 0</div><ul class="ticks"><li>2 KI-Wochenpläne pro Monat</li><li>Manuell planen</li><li>Rezept per Link, Einkaufsliste teilen</li></ul></div>
+        <div class="tcard"><h3>Midi</h3><div class="price">4.90 <small>CHF / Monat</small></div><ul class="ticks"><li>8 KI-Wochenpläne, 60 Anpassungen</li><li>Briefing per Sprache, Kalender-Termine</li><li>Foto-Import, Bring! direkt, Familienkonto</li></ul></div>
+        <div class="tcard dark"><h3>Pro</h3><div class="price">9.90 <small>CHF / Monat</small></div><ul class="ticks"><li>Alles aus Midi, 12 KI-Wochenpläne</li><li>20 Thermomix-Umwandlungen</li><li>Export nach Cookidoo, Themenlisten</li></ul></div>
+      </div>
+      <div class="trial">Midi 14 Tage gratis testen, danach monatlich kündbar.</div>
+      <div class="qsec" id="q-preis"></div>
+    </div>
+  </section>
+
+  <section class="band dark" id="testing">
+    <div class="wrap stack">
+      <div class="eyebrow">Teil 4 von 4</div>
+      <h2>Testest du mit?</h2>
+      <div class="proto">
+        <div class="stack" style="gap:6px">
+          <h3>Klickbarer Prototyp</h3>
+          <div class="small" style="color:var(--on-dark2)">Alle Bildschirme sind klickbar, die Daten sind Beispiele. Ideal am Handy, 10 Minuten reichen.</div>
+        </div>
+        <a class="btn btn-primary" id="protoLink" href="#" target="_blank" rel="noopener">Prototyp öffnen</a>
+      </div>
+      <div class="qsec" id="q-test"></div>
+    </div>
+  </section>
+
+  <section class="band" id="senden">
+    <div class="wrap stack">
+      <div class="eyebrow">Fertig</div>
+      <h2>Danke! Schick mir deine Antworten</h2>
+      <div class="summary">
+        <div class="muted small" id="sumInfo"></div>
+        <div class="sum-text" id="sumText" tabindex="0" aria-label="Zusammenfassung deiner Antworten"></div>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">
+        <div class="cta-row">
+          <button class="btn btn-primary" id="sendBtn" type="button" hidden>Antworten senden</button>
+          <a class="btn btn-primary" id="mailBtn" href="#">Per Mail an Daniel senden</a>
+          <button class="btn btn-ghost" id="copyBtn" type="button">Text kopieren</button>
+        </div>
+        <div class="status" id="status" role="status"></div>
+        <div class="mailto" id="mailHint">Öffnet sich kein Mailprogramm? Kopiere den Text und schick ihn an <code id="mailAddr"></code> oder per WhatsApp.</div>
+      </div>
+    </div>
+  </section>
+  <div class="foot wrap">Unabhängiges Projekt · nicht von Vorwerk oder Bring! unterstützt · Deine Antworten bleiben auf deinem Gerät, bis du sie selbst sendest.</div>
+</main>
+
+<script>
+// ---- Einstellungen ----
+const MAIL_TO = 'daniel.baur.sg@gmail.com';
+const PROTO_URL = 'https://claude.ai/artifact/RbBP26irHq3qg9Rqz6Q6eC';
+// Basis-URL des survey-service. '' = gleiche Domain wie diese Seite (Standard, wenn der Service die Seite ausliefert).
+const API_URL = '';
+// Auf claude.ai oder als lokale Datei gibt es kein Backend: dann nur Mail und Kopieren.
+const API_ON = location.protocol.startsWith('http') && !/claude\.ai$|claudeusercontent\.com$/.test(location.hostname);
+
+// ---- Inhalte ----
+const Q_HEUTE = [
+  { id: 'wer', t: 'Wer entscheidet bei euch meistens, was es zu essen gibt?', o: ['Ich', 'Mein/e Partner/in', 'Abwechselnd', 'Niemand, spontan'] },
+  { id: 'wann', t: 'Wann habt ihr letzte Woche geplant?', o: ['Am Wochenende für die ganze Woche', 'Jeden Tag spontan', 'Erst im Laden', 'Gar nicht'] },
+  { id: 'dauer', t: 'Wie lange brauchst du pro Woche für Planen und Einkaufsliste?', o: ['unter 15 Min', '15–30 Min', '30–60 Min', 'über 1 Std'] },
+  { id: 'nerv', t: 'Was nervt dich am meisten?', hint: 'Mehrere möglich', multi: true, o: ['Keine Ideen, immer dasselbe', 'Termine durchkreuzen den Plan', 'Etwas fehlt beim Kochen', 'Reste werden weggeworfen', 'Unverträglichkeiten', 'Kinder essen nicht mit', 'Nichts, läuft gut'] },
+  { id: 'ohne', t: 'Gab es letzte Woche einen Abend, an dem niemand wusste, was es gibt?', o: ['Ja, mehrmals', 'Ja, einmal', 'Nein'] },
+  { id: 'tools', t: 'Was nutzt ihr heute dafür?', hint: 'Mehrere möglich', multi: true, o: ['Zettel / Notizen', 'Bring!', 'Cookidoo', 'Betty Bossi / Chefkoch', 'ChatGPT o. ä.', 'Nichts'] },
+  { id: 'zahlt', t: 'Bezahlt ihr heute für eine Rezept- oder Planungs-App?', o: ['Ja', 'Nein'], yn: true },
+  { id: 'tm', t: 'Habt ihr einen Thermomix?', o: ['Ja', 'Nein'], yn: true,
+    sub: { when: 'Ja', id: 'tm_eigen', t: 'Kocht ihr eigene Rezepte damit, die nicht aus Cookidoo stammen?', o: ['Oft', 'Manchmal', 'Nie'] } },
+  { id: 'hh', t: 'Wie viele Personen essen bei euch mit?', o: ['1', '2', '3–4', '5 oder mehr'] },
+];
+
+const AREAS = [
+  ['Woche planen', [
+    ['ki', 'Woche mit KI planen', 'Vorschlag für 14 Mahlzeiten in rund einer Minute', 'Free'],
+    ['brief', 'Wochen-Briefing per Sprache', '«Mittwoch kommt Besuch, Zucchini aufbrauchen» einfach sagen', 'Midi'],
+    ['kal', 'Kalender-Termine', 'Training, Besuch, auswärts essen fliessen direkt in den Plan ein', 'Midi'],
+    ['abw', 'Abwechslungs-Check', 'Keine Beilage zweimal hintereinander, Fleisch-Limit', 'Free'],
+    ['reste', 'Reste einplanen', 'Dienstag doppelt kochen, Mittwochmittag Reste', 'Free'],
+    ['anp', 'Gezielt anpassen', '«Mittwoch etwas Schnelleres»: nur das ändert sich', 'Free'],
+    ['man', 'Manuell planen', 'Slot für Slot selbst wählen, Rest von der KI füllen lassen', 'Free'],
+  ]],
+  ['Rezepte', [
+    ['url', 'Rezept per Link', 'Von jeder Rezeptseite übernehmen und anpassen', 'Free'],
+    ['foto', 'Rezept per Foto', 'Kochbuchseite oder Grosis Handschrift abfotografieren', 'Midi'],
+    ['samml', 'Sammlungen', 'Eigene Listen wie «Familienlieblinge»', 'Midi'],
+  ]],
+  ['Einkauf', [
+    ['liste', 'Einkaufsliste automatisch', 'Nach Abteilungen sortiert, Mengen zusammengezählt', 'Free'],
+    ['bring', 'An Bring! senden', 'Per Teilen oder direkt ins Bring!-Konto', 'Free'],
+    ['offline', 'Offline abhaken', 'Funktioniert im Laden auch ohne Empfang', 'Free'],
+  ]],
+  ['Thermomix', [
+    ['tmconv', 'Eigene Rezepte für Thermomix', 'Zeit, Temperatur und Stufe pro Schritt, von der KI umgewandelt', 'Pro'],
+    ['cookidoo', 'Export nach Cookidoo', 'Als «Meine Kreation» direkt auf dem Gerät', 'Pro'],
+    ['themen', 'Themenlisten', '«Glutenfrei für die Familie», «Basenfasten-Woche»', 'Pro'],
+  ]],
+  ['Familie', [
+    ['mitgl', 'Gemeinsamer Haushalt', 'Partner plant mit, alle sehen Plan und Liste', 'Midi'],
+  ]],
+];
+const RATE = ['Brauch ich nicht', 'Nett', 'Will ich!'];
+
+const PRICES = ['CHF 0', '2', '3', '4', '5', '7', '10', '15+'];
+const Q_PREIS = [
+  { id: 'nutzen', t: 'Würdest du die App nutzen, wenn es sie heute gäbe?', o: ['Ja, sicher', 'Wahrscheinlich', 'Eher nicht', 'Nein'] },
+  { id: 'hemmnis', t: 'Was würde dich davon abhalten?', hint: 'Mehrere möglich', multi: true, o: ['Datenschutz', 'Skepsis gegenüber KI', 'Einrichtung zu aufwendig', 'Partner/in macht nicht mit', 'Preis', 'Brauche keine App dafür', 'Nichts'] },
+  { id: 'p_billig', t: 'Ab welchem Monatspreis wäre sie so billig, dass du an der Qualität zweifelst?', o: PRICES, price: true },
+  { id: 'p_guenstig', t: 'Welcher Monatspreis fühlt sich günstig an, also «das ist es mir wert»?', o: PRICES, price: true },
+  { id: 'p_teuer', t: 'Ab welchem Preis wird es teuer, du würdest aber noch überlegen?', o: PRICES, price: true },
+  { id: 'p_zuteuer', t: 'Ab welchem Preis ist es dir zu teuer?', o: PRICES, price: true },
+  { id: 'stufe', t: 'Welche Stufe würdest du wählen?', o: ['Free', 'Midi', 'Pro', 'Keine'] },
+];
+
+const Q_TEST = [
+  { id: 'proto', t: 'Testest du den Prototyp 20 Minuten mit mir?', o: ['Ja, vor Ort', 'Ja, per Video', 'Nein'] },
+  { id: 'beta', t: 'Würdest du die erste echte Version 4 Wochen im Alltag nutzen und mir danach Feedback geben?', o: ['Ja', 'Vielleicht', 'Nein'] },
+  { id: 'vorbest', t: 'Würdest du ein Jahresabo schon jetzt zum vergünstigten Startpreis reservieren?', hint: 'Unverbindlich, aber ehrlich gemeint', o: ['Ja', 'Vielleicht', 'Nein'] },
+  { id: 'name', t: 'Wie heisst du?', text: 'Vorname', short: true },
+  { id: 'kontakt', t: 'Wie erreiche ich dich für einen Testtermin?', text: 'Handy oder E-Mail (freiwillig)', short: true },
+  { id: 'fehlt', t: 'Was fehlt dir, oder was möchtest du mir noch sagen?', text: 'Alles ist willkommen, auch Kritik' },
+];
+
+// ---- Zustand ----
+const KEY = 'menueplan-umfrage-v1';
+let S = { a: {}, r: {} };
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+// ---- Render ----
+const el = (tag, attrs = {}, kids = []) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  [].concat(kids).forEach((c) => c && n.append(c));
+  return n;
+};
+let qCounter = 0;
+function question(q, host) {
+  const num = ++qCounter;
+  const box = el('div', { class: 'q', id: 'q-' + q.id });
+  box.append(el('div', { class: 'q-h' }, [el('span', { class: 'q-n', text: String(num) }), el('div', {}, [el('div', { class: 'q-t', text: q.t }), q.hint ? el('div', { class: 'q-hint', text: q.hint }) : null])]));
+  if (q.text) {
+    const inp = el(q.short ? 'input' : 'textarea', { id: 'in-' + q.id, placeholder: q.text, 'aria-label': q.t });
+    if (q.short) inp.type = 'text';
+    inp.value = S.a[q.id] || '';
+    inp.addEventListener('input', () => { S.a[q.id] = inp.value; save(); update(); });
+    box.append(inp);
+  } else {
+    box.append(options(q));
+    if (q.sub) {
+      const sub = el('div', { class: 'sub', id: 'sub-' + q.sub.id });
+      sub.append(el('div', { class: 'q-t', text: q.sub.t }), options(q.sub));
+      box.append(sub);
+    }
+  }
+  host.append(box);
+}
+function options(q) {
+  const wrap = el('div', { class: 'opts' + (q.yn ? ' yn' : '') + (q.price ? ' price' : ''), role: 'group', 'aria-label': q.t });
+  q.o.forEach((o) => {
+    const label = q.price && o !== 'CHF 0' ? o + (o.endsWith('+') ? '' : '.–') : o;
+    const b = el('button', { type: 'button', class: 'opt', 'data-q': q.id, 'data-o': o, 'aria-pressed': 'false', text: label });
+    b.addEventListener('click', () => {
+      if (q.multi) {
+        const cur = new Set(S.a[q.id] || []);
+        if (cur.has(o)) cur.delete(o); else { if (o.startsWith('Nichts')) cur.clear(); else q.o.filter((x) => x.startsWith('Nichts')).forEach((x) => cur.delete(x)); cur.add(o); }
+        S.a[q.id] = [...cur];
+      } else S.a[q.id] = S.a[q.id] === o ? undefined : o;
+      save(); update();
+    });
+    wrap.append(b);
+  });
+  return wrap;
+}
+Q_HEUTE.forEach((q) => question(q, document.getElementById('q-heute')));
+Q_PREIS.forEach((q) => question(q, document.getElementById('q-preis')));
+Q_TEST.forEach((q) => question(q, document.getElementById('q-test')));
+
+const areasHost = document.getElementById('areas');
+AREAS.forEach(([name, feats], i) => {
+  const grid = el('div', { class: 'fgrid' });
+  feats.forEach(([id, t, d, tier]) => {
+    const card = el('div', { class: 'fcard', id: 'f-' + id });
+    card.append(el('div', { class: 'ftop' }, [el('div', { class: 'ftitle', text: t }), el('span', { class: 'tier ' + tier, text: tier })]));
+    card.append(el('div', { class: 'fdesc', text: d }));
+    const rate = el('div', { class: 'rate', role: 'group', 'aria-label': 'Wie wichtig: ' + t });
+    RATE.forEach((r, v) => {
+      const b = el('button', { type: 'button', 'data-f': id, 'data-v': String(v), 'aria-pressed': 'false', text: r });
+      b.addEventListener('click', () => { S.r[id] = S.r[id] === v ? undefined : v; save(); update(); });
+      rate.append(b);
+    });
+    card.append(rate);
+    grid.append(card);
+  });
+  areasHost.append(el('div', { class: 'stack', style: 'gap:12px' }, [el('div', { class: 'area-h' }, [el('span', { class: 'n', text: String(i + 1).padStart(2, '0') }), el('h3', { text: name })]), grid]));
+});
+
+document.getElementById('protoLink').href = PROTO_URL;
+document.getElementById('protoLinkHero').href = PROTO_URL;
+document.getElementById('mailAddr').textContent = MAIL_TO;
+
+// ---- Zusammenfassung ----
+const ALLQ = [...Q_HEUTE, ...Q_PREIS, ...Q_TEST];
+const FEATS = AREAS.flatMap(([, f]) => f);
+const fmt = (v) => Array.isArray(v) ? v.join(', ') : v;
+function summary() {
+  const L = [];
+  const name = (S.a.name || '').trim();
+  L.push('Menüplan-Umfrage' + (name ? ' – ' + name : ''));
+  L.push('');
+  L.push('HEUTE');
+  Q_HEUTE.forEach((q) => {
+    if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id]));
+    if (q.sub && S.a[q.id] === q.sub.when && S.a[q.sub.id]) L.push('  ↳ ' + q.sub.t + ' → ' + S.a[q.sub.id]);
+  });
+  L.push('');
+  L.push('FUNKTIONEN');
+  const want = FEATS.filter(([id]) => S.r[id] === 2).map((f) => f[1]);
+  const nice = FEATS.filter(([id]) => S.r[id] === 1).map((f) => f[1]);
+  const no = FEATS.filter(([id]) => S.r[id] === 0).map((f) => f[1]);
+  L.push('Will ich: ' + (want.join(', ') || '–'));
+  L.push('Nett: ' + (nice.join(', ') || '–'));
+  L.push('Brauch ich nicht: ' + (no.join(', ') || '–'));
+  L.push('');
+  L.push('WERT & PREIS');
+  Q_PREIS.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id])); });
+  L.push('');
+  L.push('TESTEN');
+  Q_TEST.forEach((q) => { const v = S.a[q.id]; if (v && String(v).trim()) L.push('• ' + q.t + ' → ' + String(v).trim()); });
+  return L.join('\n');
+}
+
+function update() {
+  document.querySelectorAll('.opt').forEach((b) => {
+    const v = S.a[b.dataset.q];
+    b.setAttribute('aria-pressed', String(Array.isArray(v) ? v.includes(b.dataset.o) : v === b.dataset.o));
+  });
+  document.querySelectorAll('.rate button').forEach((b) => b.setAttribute('aria-pressed', String(S.r[b.dataset.f] === Number(b.dataset.v))));
+  FEATS.forEach(([id]) => { const c = document.getElementById('f-' + id); c.classList.toggle('rated-2', S.r[id] === 2); });
+  ALLQ.forEach((q) => {
+    const v = S.a[q.id];
+    const done = Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
+    document.getElementById('q-' + q.id).classList.toggle('done', done);
+    if (q.sub) document.getElementById('sub-' + q.sub.id).hidden = v !== q.sub.when;
+  });
+  const choiceQ = ALLQ.filter((q) => !q.text);
+  const answered = choiceQ.filter((q) => { const v = S.a[q.id]; return Array.isArray(v) ? v.length : v; }).length + FEATS.filter(([id]) => S.r[id] !== undefined).length;
+  const total = choiceQ.length + FEATS.length;
+  document.getElementById('pfill').style.width = (answered / total) * 100 + '%';
+  document.getElementById('pnum').textContent = answered + ' von ' + total;
+  const text = summary();
+  document.getElementById('sumText').textContent = text;
+  document.getElementById('sumInfo').textContent = answered < total ? `Du hast ${answered} von ${total} Punkten beantwortet. Du kannst trotzdem senden.` : 'Alles beantwortet, merci!';
+  const subj = 'Menüplan-Umfrage' + (S.a.name ? ' – ' + S.a.name.trim() : '');
+  document.getElementById('mailBtn').href = 'mailto:' + MAIL_TO + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(text);
+}
+// ---- Senden an den survey-service ----
+const sendBtn = document.getElementById('sendBtn');
+const mailBtn = document.getElementById('mailBtn');
+const mailHint = document.getElementById('mailHint');
+function setMode(api) {
+  sendBtn.hidden = !api;
+  mailBtn.hidden = api;
+  mailHint.hidden = api;
+}
+setMode(API_ON);
+if (S.sentId) { sendBtn.disabled = true; sendBtn.textContent = 'Gesendet ✓'; }
+sendBtn.addEventListener('click', async () => {
+  const st = document.getElementById('status');
+  st.classList.remove('err');
+  sendBtn.disabled = true; sendBtn.textContent = 'Wird gesendet …';
+  const answers = {};
+  for (const [k, v] of Object.entries(S.a)) {
+    if (v === undefined || v === null) continue;
+    if (Array.isArray(v) ? v.length : String(v).trim()) answers[k] = Array.isArray(v) ? v : String(v).trim();
+  }
+  const ratings = {};
+  for (const [k, v] of Object.entries(S.r)) if (v !== undefined && v !== null) ratings[k] = v;
+  try {
+    const res = await fetch(API_URL + '/api/responses', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers, ratings, summary: summary(), website: document.getElementById('website').value }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Status ' + res.status);
+    S.sentId = data.id || true; save();
+    sendBtn.textContent = 'Gesendet ✓';
+    st.textContent = 'Merci! Deine Antworten sind bei Daniel angekommen.';
+  } catch (e) {
+    sendBtn.disabled = false; sendBtn.textContent = 'Nochmals versuchen';
+    st.classList.add('err');
+    st.textContent = 'Senden hat nicht geklappt (' + e.message + '). Du kannst die Antworten auch per Mail schicken.';
+    mailBtn.hidden = false; mailHint.hidden = false;
+  }
+});
+mailBtn.addEventListener('click', () => {
+  document.getElementById('status').textContent = 'Dein Mailprogramm sollte sich öffnen. Prüfe dort den Text und drück auf Senden.';
+});
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const st = document.getElementById('status');
+  try { await navigator.clipboard.writeText(summary()); st.textContent = 'Kopiert. Füge den Text in eine Mail oder WhatsApp an Daniel ein.'; }
+  catch (e) {
+    const r = document.createRange(); r.selectNodeContents(document.getElementById('sumText'));
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    st.textContent = 'Text ist markiert. Kopiere ihn mit Teilen oder Kopieren.';
+  }
+});
+update();
+</script>
+
+</body>
+</html>
