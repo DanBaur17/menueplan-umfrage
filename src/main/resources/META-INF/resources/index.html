@@ -143,6 +143,28 @@ textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border
 .bubble circle { animation: blink 1.4s infinite; }
 .bubble circle:nth-child(3) { animation-delay: .2s; } .bubble circle:nth-child(4) { animation-delay: .4s; }
 @keyframes blink { 50% { opacity: .35; } }
+
+/* Cookidoo-Highlight */
+em.hl { font-style: italic; color: var(--mint); }
+.flow { display: grid; grid-template-columns: 1fr; gap: 10px; align-items: stretch; }
+@media (min-width: 720px) { .flow { grid-template-columns: 1fr auto 1fr auto 1fr; } }
+.flow-step { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.flow-step.result { border-color: var(--green); background: rgba(92,184,75,.12); }
+.flow-n { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--mint); }
+.flow-arrow { display: grid; place-items: center; color: var(--green); font-size: 24px; font-weight: 700; transform: rotate(90deg); }
+@media (min-width: 720px) { .flow-arrow { transform: none; } }
+.ask { font-family: var(--f-d); font-size: 18px; line-height: 1.35; }
+.chips-mini { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips-mini span { font-size: 12px; font-weight: 700; background: var(--mint); color: var(--anth); padding: 3px 10px; border-radius: 999px; }
+.hits { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.hits li { display: flex; flex-direction: column; background: rgba(255,255,255,.06); border-radius: 10px; padding: 7px 10px; }
+.hits li span { font-size: 12px; color: var(--on-dark2); }
+.hits li.more { background: none; padding: 2px 10px; color: var(--mint); font-weight: 600; font-size: 13px; }
+.list-card { display: flex; gap: 12px; align-items: center; background: var(--surface); color: var(--anth); border-radius: 14px; padding: 12px; }
+.list-card .small { color: var(--text2); }
+.list-ico { width: 42px; height: 42px; flex: 0 0 42px; border-radius: 12px; background: var(--bg2); display: grid; place-items: center; font-size: 22px; }
+.themes { display: flex; flex-wrap: wrap; gap: 8px; }
+.themes span { font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); color: #F4F8F0; }
 </style>
 </head>
 <body>
@@ -166,7 +188,7 @@ textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border
         <a class="btn btn-primary" href="#features">Los geht's</a>
         <a class="btn btn-on-dark" id="protoLinkHero" href="#" target="_blank" rel="noopener">Prototyp ansehen</a>
       </div>
-      <div class="facts"><span><strong>14</strong> Mahlzeiten pro Woche</span><span><strong>1 Min</strong> bis zum Vorschlag</span><span><strong>Bring!</strong> &amp; <strong>Thermomix</strong></span></div>
+      <div class="facts"><span><strong>14</strong> Mahlzeiten pro Woche</span><span><strong>1 Min</strong> bis zum Vorschlag</span><span><strong>Cookidoo</strong>-Listen nach Wunsch</span></div>
     </div>
     <div class="week" aria-label="Beispielwoche">
       <svg class="bubble" width="64" height="43" viewBox="0 0 90 60" aria-hidden="true"><path d="M8 8 h74 a6 6 0 0 1 6 6 v28 a6 6 0 0 1 -6 6 h-40 l-14 12 v-12 h-20 a6 6 0 0 1 -6 -6 v-28 a6 6 0 0 1 6 -6 z" fill="rgba(255,255,255,.12)"/><circle cx="30" cy="28" r="4" fill="#5CB84B"/><circle cx="45" cy="28" r="4" fill="#5CB84B"/><circle cx="60" cy="28" r="4" fill="#9ED98C"/></svg>
@@ -183,7 +205,7 @@ textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border
 <main>
   <section class="band" id="heute">
     <div class="wrap stack">
-      <div class="eyebrow">Teil 1 von 4</div>
+      <div class="eyebrow">Teil 1 von 5</div>
       <h2>Wie läuft es heute bei euch?</h2>
       <p class="lead">Es geht um eure letzte Woche, nicht um Wünsche.</p>
       <div class="qsec" id="q-heute"></div>
@@ -192,16 +214,57 @@ textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border
 
   <section class="band deep" id="features">
     <div class="wrap stack">
-      <div class="eyebrow">Teil 2 von 4</div>
+      <div class="eyebrow">Teil 2 von 5</div>
       <h2>Was die App kann</h2>
       <p class="lead">Tippe bei jeder Funktion, wie wichtig sie dir wäre.</p>
       <div class="areas" id="areas"></div>
     </div>
   </section>
 
+  <section class="band dark" id="cookidoo">
+    <div class="wrap stack">
+      <div class="eyebrow">Teil 3 von 5 · Highlight für Thermomix-Haushalte</div>
+      <h2>Cookidoo durchsuchen, wie <em class="hl">ihr</em> esst</h2>
+      <p class="lead">Zehntausende Rezepte, aber die Suche kennt eure Bedürfnisse nicht. Du sagst, was ihr braucht. Die KI findet passende Rezepte und legt sie als fertige Liste in Cookidoo an. Sie sind direkt auf dem Thermomix.</p>
+
+      <div class="flow" aria-label="So entsteht eine Liste">
+        <div class="flow-step">
+          <div class="flow-n">1 · Dein Wunsch</div>
+          <div class="ask">«Glutenfrei, ohne Pilze, kindertauglich und unter 30 Minuten»</div>
+          <div class="chips-mini"><span>glutenfrei</span><span>ohne Pilze</span><span>Kinder</span><span>&lt; 30 Min</span></div>
+        </div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step">
+          <div class="flow-n">2 · KI sucht und prüft</div>
+          <ul class="hits">
+            <li><b>Risotto mit Zucchini</b><span>glutenfrei · 25 Min</span></li>
+            <li><b>Linsen-Dal mit Reis</b><span>glutenfrei · vegan</span></li>
+            <li><b>Poulet-Curry mild</b><span>Kinder · 30 Min</span></li>
+            <li class="more">+ 17 weitere, jede mit Begründung</li>
+          </ul>
+        </div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-step result">
+          <div class="flow-n">3 · In Cookidoo</div>
+          <div class="list-card">
+            <div class="list-ico">📋</div>
+            <div><b>Glutenfrei für die Familie</b><div class="small">20 Rezepte · auf dem TM6 verfügbar</div></div>
+          </div>
+          <div class="small" style="color:var(--on-dark2)">Abwählen, was nicht passt, dann mit einem Tipp anlegen.</div>
+        </div>
+      </div>
+
+      <div class="themes" aria-label="Beispiele für Listen">
+        <span>🌾 Glutenfrei für die Familie</span><span>🥦 Basenfasten-Woche</span><span>⏱️ Schnell &amp; vegetarisch</span><span>💪 Eisenreich in der Schwangerschaft</span><span>🍂 Herbst mit Kürbis &amp; Marroni</span><span>🎉 Gäste ohne Stress</span><span>🥛 Laktosefrei</span><span>✍️ Dein eigenes Thema</span>
+      </div>
+
+      <div class="qsec" id="q-cook"></div>
+    </div>
+  </section>
+
   <section class="band" id="preis">
     <div class="wrap stack">
-      <div class="eyebrow">Teil 3 von 4</div>
+      <div class="eyebrow">Teil 4 von 5</div>
       <h2>Was wäre es dir wert?</h2>
       <p class="lead">So sind die Abos geplant. Deine Antworten unten zählen mehr als meine Preise.</p>
       <div class="tiers">
@@ -216,7 +279,7 @@ textarea:focus, input[type=text]:focus { outline: 2px solid var(--green); border
 
   <section class="band dark" id="testing">
     <div class="wrap stack">
-      <div class="eyebrow">Teil 4 von 4</div>
+      <div class="eyebrow">Teil 5 von 5</div>
       <h2>Testest du mit?</h2>
       <div class="proto">
         <div class="stack" style="gap:6px">
@@ -298,7 +361,7 @@ const AREAS = [
   ['Thermomix', [
     ['tmconv', 'Eigene Rezepte für Thermomix', 'Zeit, Temperatur und Stufe pro Schritt, von der KI umgewandelt', 'Pro'],
     ['cookidoo', 'Export nach Cookidoo', 'Als «Meine Kreation» direkt auf dem Gerät', 'Pro'],
-    ['themen', 'Themenlisten', '«Glutenfrei für die Familie», «Basenfasten-Woche»', 'Pro'],
+    ['themen', 'Cookidoo-Listen nach Wunsch', 'Sag, was ihr braucht, die KI legt die passende Liste in Cookidoo an', 'Pro'],
   ]],
   ['Familie', [
     ['mitgl', 'Gemeinsamer Haushalt', 'Partner plant mit, alle sehen Plan und Liste', 'Midi'],
@@ -317,6 +380,11 @@ const Q_PREIS = [
   { id: 'stufe', t: 'Welche Stufe würdest du wählen?', o: ['Free', 'Midi', 'Pro', 'Keine'] },
 ];
 
+const Q_COOK = [
+  { id: 'cook_suche', t: 'Findest du in Cookidoo heute, was ihr wirklich braucht?', o: ['Ja, problemlos', 'Mit Mühe', 'Oft nicht', 'Nutze kein Cookidoo'] },
+  { id: 'cook_listen', t: 'Für welche Themen würdest du dir Listen anlegen lassen?', hint: 'Mehrere möglich', multi: true, o: ['Unverträglichkeiten', 'Kur / Fasten', 'Abnehmen / leicht', 'Kinderküche', 'Schnelle Küche', 'Saisonal', 'Gäste & Feste', 'Keine'] },
+  { id: 'cook_wert', t: 'Wäre dir diese Funktion allein ein Pro-Abo wert?', o: ['Ja', 'Vielleicht', 'Nein'] },
+];
 const Q_TEST = [
   { id: 'proto', t: 'Testest du den Prototyp 20 Minuten mit mir?', o: ['Ja, vor Ort', 'Ja, per Video', 'Nein'] },
   { id: 'beta', t: 'Würdest du die erste echte Version 4 Wochen im Alltag nutzen und mir danach Feedback geben?', o: ['Ja', 'Vielleicht', 'Nein'] },
@@ -381,6 +449,7 @@ function options(q) {
   return wrap;
 }
 Q_HEUTE.forEach((q) => question(q, document.getElementById('q-heute')));
+Q_COOK.forEach((q) => question(q, document.getElementById('q-cook')));
 Q_PREIS.forEach((q) => question(q, document.getElementById('q-preis')));
 Q_TEST.forEach((q) => question(q, document.getElementById('q-test')));
 
@@ -408,7 +477,7 @@ document.getElementById('protoLinkHero').href = PROTO_URL;
 document.getElementById('mailAddr').textContent = MAIL_TO;
 
 // ---- Zusammenfassung ----
-const ALLQ = [...Q_HEUTE, ...Q_PREIS, ...Q_TEST];
+const ALLQ = [...Q_HEUTE, ...Q_COOK, ...Q_PREIS, ...Q_TEST];
 const FEATS = AREAS.flatMap(([, f]) => f);
 const fmt = (v) => Array.isArray(v) ? v.join(', ') : v;
 function summary() {
@@ -429,6 +498,9 @@ function summary() {
   L.push('Will ich: ' + (want.join(', ') || '–'));
   L.push('Nett: ' + (nice.join(', ') || '–'));
   L.push('Brauch ich nicht: ' + (no.join(', ') || '–'));
+  L.push('');
+  L.push('COOKIDOO-LISTEN');
+  Q_COOK.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id])); });
   L.push('');
   L.push('WERT & PREIS');
   Q_PREIS.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id])); });
