@@ -280,11 +280,11 @@ em.hl { font-style: italic; color: var(--mint); }
   <section class="band dark" id="testing">
     <div class="wrap stack">
       <div class="eyebrow">Teil 5 von 5</div>
-      <h2>Testest du mit?</h2>
+      <h2>Probier den Prototyp aus</h2>
       <div class="proto">
         <div class="stack" style="gap:6px">
           <h3>Klickbarer Prototyp</h3>
-          <div class="small" style="color:var(--on-dark2)">Alle Bildschirme sind klickbar, die Daten sind Beispiele. Ideal am Handy, 10 Minuten reichen.</div>
+          <div class="small" style="color:var(--on-dark2)">Alle Bildschirme sind klickbar, die Daten sind Beispiele. Klick dich 5–10 Minuten durch und schreib dann unten, was dir auffällt. Deine bisherigen Antworten bleiben gespeichert.</div>
         </div>
         <a class="btn btn-primary" id="protoLink" href="#" target="_blank" rel="noopener">Prototyp öffnen</a>
       </div>
@@ -386,12 +386,15 @@ const Q_COOK = [
   { id: 'cook_wert', t: 'Wäre dir diese Funktion allein ein Pro-Abo wert?', o: ['Ja', 'Vielleicht', 'Nein'] },
 ];
 const Q_TEST = [
-  { id: 'proto', t: 'Testest du den Prototyp 20 Minuten mit mir?', o: ['Ja, vor Ort', 'Ja, per Video', 'Nein'] },
+  { id: 'proto', t: 'Hast du den Prototyp ausprobiert?', o: ['Ja', 'Nur kurz', 'Nein'] },
+  { id: 'proto_klar', t: 'Wie gut hast du dich im Prototyp zurechtgefunden?', o: ['Sofort klar', 'Meistens', 'Oft verloren'] },
+  { id: 'proto_gut', t: 'Was hat dir am Prototyp gefallen?', text: 'z. B. Kalender-Termine, Einkaufsliste, Cookidoo-Listen …' },
+  { id: 'proto_schlecht', t: 'Was war unklar, hat gestört oder hat gefehlt?', text: 'Je konkreter, desto besser: welcher Bildschirm, welcher Knopf' },
   { id: 'beta', t: 'Würdest du die erste echte Version 4 Wochen im Alltag nutzen und mir danach Feedback geben?', o: ['Ja', 'Vielleicht', 'Nein'] },
   { id: 'vorbest', t: 'Würdest du ein Jahresabo schon jetzt zum vergünstigten Startpreis reservieren?', hint: 'Unverbindlich, aber ehrlich gemeint', o: ['Ja', 'Vielleicht', 'Nein'] },
   { id: 'name', t: 'Wie heisst du?', text: 'Vorname', short: true },
-  { id: 'kontakt', t: 'Wie erreiche ich dich für einen Testtermin?', text: 'Handy oder E-Mail (freiwillig)', short: true },
-  { id: 'fehlt', t: 'Was fehlt dir, oder was möchtest du mir noch sagen?', text: 'Alles ist willkommen, auch Kritik' },
+  { id: 'kontakt', t: 'Darf ich dich bei Rückfragen kontaktieren?', text: 'Handy oder E-Mail (freiwillig)', short: true },
+  { id: 'fehlt', t: 'Sonst noch etwas, das du mir sagen möchtest?', text: 'Alles ist willkommen, auch Kritik' },
 ];
 
 // ---- Zustand ----

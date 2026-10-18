@@ -20,7 +20,7 @@ class ResponseResourceTest {
                 "wer": "Ich", "nerv": ["Keine Ideen, immer dasselbe", "Reste werden weggeworfen"],
                 "tm": "Ja", "tm_eigen": "Manchmal",
                 "p_guenstig": "5", "p_teuer": "10",
-                "proto": "Ja, per Video", "beta": "Ja", "vorbest": "Vielleicht", "stufe": "Midi",
+                "proto": "Ja", "beta": "Ja", "vorbest": "Vielleicht", "stufe": "Midi",
                 "fehlt": "=HYPERLINK(\\"x\\")"
               },
               "ratings": { "ki": 2, "kal": 2, "tmconv": 0 },
@@ -38,7 +38,7 @@ class ResponseResourceTest {
                 .when().get("/api/stats")
                 .then().statusCode(200)
                 .body("antworten", greaterThanOrEqualTo(1))
-                .body("signale.prototypTestJa", greaterThanOrEqualTo(1))
+                .body("signale.prototypAusprobiert", greaterThanOrEqualTo(1))
                 .body("features.ki.willIch", greaterThanOrEqualTo(1))
                 .body("fragen.nerv.'Reste werden weggeworfen'", greaterThanOrEqualTo(1));
 

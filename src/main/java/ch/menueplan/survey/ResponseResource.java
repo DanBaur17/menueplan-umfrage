@@ -160,12 +160,12 @@ public class ResponseResource {
         int proto = 0, beta = 0, preorder = 0;
 
         for (SurveyResponse r : rows) {
-            if (r.prototypeTest != null && r.prototypeTest.startsWith("Ja")) proto++;
+            if ("Ja".equals(r.prototypeTest) || "Nur kurz".equals(r.prototypeTest)) proto++;
             if ("Ja".equals(r.betaUse)) beta++;
             if ("Ja".equals(r.preorder)) preorder++;
             Map<String, Object> a = mapper.readValue(r.answersJson, ANSWERS);
             for (Map.Entry<String, Object> e : a.entrySet()) {
-                if (List.of("name", "kontakt", "fehlt").contains(e.getKey())) continue;
+                if (List.of("name", "kontakt", "fehlt", "proto_gut", "proto_schlecht").contains(e.getKey())) continue;
                 Collection<?> values = e.getValue() instanceof Collection<?> c ? c : List.of(String.valueOf(e.getValue()));
                 for (Object v : values) {
                     optionCounts.computeIfAbsent(e.getKey(), k -> new TreeMap<>()).merge(String.valueOf(v), 1, Integer::sum);
@@ -188,7 +188,7 @@ public class ResponseResource {
 
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("antworten", rows.size());
-        out.put("signale", Map.of("prototypTestJa", proto, "betaJa", beta, "vorbestellungJa", preorder));
+        out.put("signale", Map.of("prototypAusprobiert", proto, "betaJa", beta, "vorbestellungJa", preorder));
         out.put("preisMedianeChf", priceMedians);
         out.put("features", features);
         out.put("fragen", optionCounts);
