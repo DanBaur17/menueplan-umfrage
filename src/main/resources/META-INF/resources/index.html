@@ -165,6 +165,7 @@ em.hl { font-style: italic; color: var(--mint); }
 .list-ico { width: 42px; height: 42px; flex: 0 0 42px; border-radius: 12px; background: var(--bg2); display: grid; place-items: center; font-size: 22px; }
 .themes { display: flex; flex-wrap: wrap; gap: 8px; }
 .themes span { font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); color: #F4F8F0; }
+.other-in { margin-top: -2px; }
 </style>
 </head>
 <body>
@@ -326,12 +327,12 @@ const PROTO_URL = API_ON ? '/prototyp/' : PROTO_URL_CLAUDE;
 
 // ---- Inhalte ----
 const Q_HEUTE = [
-  { id: 'wer', t: 'Wer entscheidet bei euch meistens, was es zu essen gibt?', o: ['Ich', 'Mein/e Partner/in', 'Abwechselnd', 'Niemand, spontan'] },
-  { id: 'wann', t: 'Wann habt ihr letzte Woche geplant?', o: ['Am Wochenende für die ganze Woche', 'Jeden Tag spontan', 'Erst im Laden', 'Gar nicht'] },
+  { id: 'wer', t: 'Wer entscheidet bei euch meistens, was es zu essen gibt?', o: ['Ich', 'Mein/e Partner/in', 'Abwechselnd', 'Niemand, spontan', 'Andere'], other: true },
+  { id: 'wann', t: 'Wann habt ihr letzte Woche geplant?', o: ['Am Wochenende für die ganze Woche', 'Jeden Tag spontan', 'Erst im Laden', 'Gar nicht', 'Andere'], other: true },
   { id: 'dauer', t: 'Wie lange brauchst du pro Woche für Planen und Einkaufsliste?', o: ['unter 15 Min', '15–30 Min', '30–60 Min', 'über 1 Std'] },
-  { id: 'nerv', t: 'Was nervt dich am meisten?', hint: 'Mehrere möglich', multi: true, o: ['Keine Ideen, immer dasselbe', 'Termine durchkreuzen den Plan', 'Etwas fehlt beim Kochen', 'Reste werden weggeworfen', 'Unverträglichkeiten', 'Kinder essen nicht mit', 'Nichts, läuft gut'] },
+  { id: 'nerv', t: 'Was nervt dich am meisten?', hint: 'Mehrere möglich', multi: true, o: ['Keine Ideen, immer dasselbe', 'Termine durchkreuzen den Plan', 'Etwas fehlt beim Kochen', 'Reste werden weggeworfen', 'Unverträglichkeiten', 'Kinder essen nicht mit', 'Andere', 'Nichts, läuft gut'], other: true },
   { id: 'ohne', t: 'Gab es letzte Woche einen Abend, an dem niemand wusste, was es gibt?', o: ['Ja, mehrmals', 'Ja, einmal', 'Nein'] },
-  { id: 'tools', t: 'Was nutzt ihr heute dafür?', hint: 'Mehrere möglich', multi: true, o: ['Zettel / Notizen', 'Bring!', 'Cookidoo', 'Betty Bossi / Chefkoch', 'ChatGPT o. ä.', 'Nichts'] },
+  { id: 'tools', t: 'Was nutzt ihr heute dafür?', hint: 'Mehrere möglich', multi: true, o: ['Zettel / Notizen', 'Bring!', 'Cookidoo', 'Betty Bossi / Chefkoch', 'ChatGPT o. ä.', 'Andere', 'Nichts'], other: true },
   { id: 'zahlt', t: 'Bezahlt ihr heute für eine Rezept- oder Planungs-App?', o: ['Ja', 'Nein'], yn: true },
   { id: 'tm', t: 'Habt ihr einen Thermomix?', o: ['Ja', 'Nein'], yn: true,
     sub: { when: 'Ja', id: 'tm_eigen', t: 'Kocht ihr eigene Rezepte damit, die nicht aus Cookidoo stammen?', o: ['Oft', 'Manchmal', 'Nie'] } },
@@ -372,7 +373,7 @@ const RATE = ['Brauch ich nicht', 'Nett', 'Will ich!'];
 const PRICES = ['CHF 0', '2', '3', '4', '5', '7', '10', '15+'];
 const Q_PREIS = [
   { id: 'nutzen', t: 'Würdest du die App nutzen, wenn es sie heute gäbe?', o: ['Ja, sicher', 'Wahrscheinlich', 'Eher nicht', 'Nein'] },
-  { id: 'hemmnis', t: 'Was würde dich davon abhalten?', hint: 'Mehrere möglich', multi: true, o: ['Datenschutz', 'Skepsis gegenüber KI', 'Einrichtung zu aufwendig', 'Partner/in macht nicht mit', 'Preis', 'Brauche keine App dafür', 'Nichts'] },
+  { id: 'hemmnis', t: 'Was würde dich davon abhalten?', hint: 'Mehrere möglich', multi: true, o: ['Datenschutz', 'Skepsis gegenüber KI', 'Einrichtung zu aufwendig', 'Partner/in macht nicht mit', 'Preis', 'Brauche keine App dafür', 'Andere', 'Nichts'], other: true },
   { id: 'p_billig', t: 'Ab welchem Monatspreis wäre sie so billig, dass du an der Qualität zweifelst?', o: PRICES, price: true },
   { id: 'p_guenstig', t: 'Welcher Monatspreis fühlt sich günstig an, also «das ist es mir wert»?', o: PRICES, price: true },
   { id: 'p_teuer', t: 'Ab welchem Preis wird es teuer, du würdest aber noch überlegen?', o: PRICES, price: true },
@@ -382,7 +383,7 @@ const Q_PREIS = [
 
 const Q_COOK = [
   { id: 'cook_suche', t: 'Findest du in Cookidoo heute, was ihr wirklich braucht?', o: ['Ja, problemlos', 'Mit Mühe', 'Oft nicht', 'Nutze kein Cookidoo'] },
-  { id: 'cook_listen', t: 'Für welche Themen würdest du dir Listen anlegen lassen?', hint: 'Mehrere möglich', multi: true, o: ['Unverträglichkeiten', 'Kur / Fasten', 'Abnehmen / leicht', 'Kinderküche', 'Schnelle Küche', 'Saisonal', 'Gäste & Feste', 'Keine'] },
+  { id: 'cook_listen', t: 'Für welche Themen würdest du dir Listen anlegen lassen?', hint: 'Mehrere möglich', multi: true, o: ['Unverträglichkeiten', 'Kur / Fasten', 'Abnehmen / leicht', 'Kinderküche', 'Schnelle Küche', 'Saisonal', 'Gäste & Feste', 'Andere', 'Keine'] , other: true },
   { id: 'cook_wert', t: 'Wäre dir diese Funktion allein ein Pro-Abo wert?', o: ['Ja', 'Vielleicht', 'Nein'] },
 ];
 const Q_TEST = [
@@ -413,6 +414,7 @@ const el = (tag, attrs = {}, kids = []) => {
   [].concat(kids).forEach((c) => c && n.append(c));
   return n;
 };
+const EXCL = (o) => o === 'Keine' || o.startsWith('Nichts');
 let qCounter = 0;
 function question(q, host) {
   const num = ++qCounter;
@@ -426,6 +428,13 @@ function question(q, host) {
     box.append(inp);
   } else {
     box.append(options(q));
+    if (q.other) {
+      const oi = el('input', { id: 'in-' + q.id + '_andere', class: 'other-in', placeholder: 'Was genau?', 'aria-label': q.t + ' – Andere' });
+      oi.type = 'text';
+      oi.value = S.a[q.id + '_andere'] || '';
+      oi.addEventListener('input', () => { S.a[q.id + '_andere'] = oi.value; save(); update(); });
+      box.append(oi);
+    }
     if (q.sub) {
       const sub = el('div', { class: 'sub', id: 'sub-' + q.sub.id });
       sub.append(el('div', { class: 'q-t', text: q.sub.t }), options(q.sub));
@@ -442,7 +451,7 @@ function options(q) {
     b.addEventListener('click', () => {
       if (q.multi) {
         const cur = new Set(S.a[q.id] || []);
-        if (cur.has(o)) cur.delete(o); else { if (o.startsWith('Nichts')) cur.clear(); else q.o.filter((x) => x.startsWith('Nichts')).forEach((x) => cur.delete(x)); cur.add(o); }
+        if (cur.has(o)) cur.delete(o); else { if (EXCL(o)) cur.clear(); else q.o.filter(EXCL).forEach((x) => cur.delete(x)); cur.add(o); }
         S.a[q.id] = [...cur];
       } else S.a[q.id] = S.a[q.id] === o ? undefined : o;
       save(); update();
@@ -483,6 +492,12 @@ document.getElementById('mailAddr').textContent = MAIL_TO;
 const ALLQ = [...Q_HEUTE, ...Q_COOK, ...Q_PREIS, ...Q_TEST];
 const FEATS = AREAS.flatMap(([, f]) => f);
 const fmt = (v) => Array.isArray(v) ? v.join(', ') : v;
+const hasOther = (q) => { const v = S.a[q.id]; return Array.isArray(v) ? v.includes('Andere') : v === 'Andere'; };
+const ans = (q) => {
+  const v = fmt(S.a[q.id]);
+  const o = (S.a[q.id + '_andere'] || '').trim();
+  return q.other && o && hasOther(q) ? v.replace('Andere', 'Andere: ' + o) : v;
+};
 function summary() {
   const L = [];
   const name = (S.a.name || '').trim();
@@ -490,7 +505,7 @@ function summary() {
   L.push('');
   L.push('HEUTE');
   Q_HEUTE.forEach((q) => {
-    if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id]));
+    if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + ans(q));
     if (q.sub && S.a[q.id] === q.sub.when && S.a[q.sub.id]) L.push('  ↳ ' + q.sub.t + ' → ' + S.a[q.sub.id]);
   });
   L.push('');
@@ -503,10 +518,10 @@ function summary() {
   L.push('Brauch ich nicht: ' + (no.join(', ') || '–'));
   L.push('');
   L.push('COOKIDOO-LISTEN');
-  Q_COOK.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id])); });
+  Q_COOK.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + ans(q)); });
   L.push('');
   L.push('WERT & PREIS');
-  Q_PREIS.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + fmt(S.a[q.id])); });
+  Q_PREIS.forEach((q) => { if (S.a[q.id] && (!Array.isArray(S.a[q.id]) || S.a[q.id].length)) L.push('• ' + q.t + ' → ' + ans(q)); });
   L.push('');
   L.push('TESTEN');
   Q_TEST.forEach((q) => { const v = S.a[q.id]; if (v && String(v).trim()) L.push('• ' + q.t + ' → ' + String(v).trim()); });
@@ -525,6 +540,7 @@ function update() {
     const done = Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
     document.getElementById('q-' + q.id).classList.toggle('done', done);
     if (q.sub) document.getElementById('sub-' + q.sub.id).hidden = v !== q.sub.when;
+    if (q.other) document.getElementById('in-' + q.id + '_andere').hidden = !hasOther(q);
   });
   const choiceQ = ALLQ.filter((q) => !q.text);
   const answered = choiceQ.filter((q) => { const v = S.a[q.id]; return Array.isArray(v) ? v.length : v; }).length + FEATS.filter(([id]) => S.r[id] !== undefined).length;
@@ -555,6 +571,7 @@ sendBtn.addEventListener('click', async () => {
   const answers = {};
   for (const [k, v] of Object.entries(S.a)) {
     if (v === undefined || v === null) continue;
+    if (k.endsWith('_andere')) { const q = ALLQ.find((x) => x.id + '_andere' === k); if (!q || !hasOther(q)) continue; }
     if (Array.isArray(v) ? v.length : String(v).trim()) answers[k] = Array.isArray(v) ? v : String(v).trim();
   }
   const ratings = {};

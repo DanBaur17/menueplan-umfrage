@@ -166,6 +166,7 @@ public class ResponseResource {
             Map<String, Object> a = mapper.readValue(r.answersJson, ANSWERS);
             for (Map.Entry<String, Object> e : a.entrySet()) {
                 if (List.of("name", "kontakt", "fehlt", "proto_gut", "proto_schlecht").contains(e.getKey())) continue;
+                if (e.getKey().endsWith("_andere")) continue; // Freitext zu "Andere": steht im CSV, nicht in der Zählung
                 Collection<?> values = e.getValue() instanceof Collection<?> c ? c : List.of(String.valueOf(e.getValue()));
                 for (Object v : values) {
                     optionCounts.computeIfAbsent(e.getKey(), k -> new TreeMap<>()).merge(String.valueOf(v), 1, Integer::sum);
